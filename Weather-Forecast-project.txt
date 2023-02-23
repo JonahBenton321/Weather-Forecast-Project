@@ -1,0 +1,44 @@
+
+    require "net/http"
+
+    require "json"
+
+    yourIPv4Address = Net::HTTP.get(URI("http://whatismyip.akamai.com/"))
+
+    location = Net::HTTP.get(URI("https://geocode.xyz/"+yourIPv4Address+"?json=1&174539398002493946020x100647"))
+
+    $jsonLocation = JSON.parse(location)
+
+    weather = Net::HTTP.get(URI("https://api.open-meteo.com/v1/forecast?latitude="+($jsonLocation["latt"]).to_s+"&longitude="+($jsonLocation["longt"]).to_s+"&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone="+($jsonLocation["timezone"]).to_s+"&past_days=0"))
+
+    $jsonWeather = JSON.parse(weather)
+
+    def forecast
+
+      puts "The temperature forecast for your area is"
+
+      puts "           Max  Min"
+      
+      maxList=""
+      minList=""
+
+      for i in 0..6 do
+
+        time = ($jsonWeather["daily"]["time"][i]).to_s
+
+        max = ($jsonWeather["daily"]["temperature_2m_max"][i]).to_s    
+
+        min = ($jsonWeather["daily"]["temperature_2m_min"][i]).to_s
+        
+        puts time+" "+max+" "+min
+        if(i<6)
+        	maxList+=max+","
+        	minList+=min+","
+        else
+          	maxList+=max
+        	minList+=min
+        end
+      end
+      puts ""
+      puts "Forecast as a bar graph: https://image-charts.com/chart?chs=800x500&cht=bvg&chd=t:"+maxList+"|"+minList+"&chco=FF0000,0000FF&chxt=y&chdl=High|Low"
+    end

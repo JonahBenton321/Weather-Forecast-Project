@@ -57,7 +57,7 @@ end
 
 forecast = WeatherPrediction.new
 forecast.month_day
-puts forecast.print
+forecast.print
 puts ""
-puts forecast.graph
+forecast.graph
 
